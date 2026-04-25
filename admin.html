@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#0a0a0a,#2b0000);
+  color:white;
+}
+header{
+  text-align:center;
+  padding:20px;
+  background:linear-gradient(to right,#400,#900);
+  font-size:28px;
+  font-weight:bold;
+  text-shadow:0 0 10px red;
+}
+.container{
+  max-width:500px;
+  margin:20px auto;
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 0 15px rgba(255,0,0,0.3);
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:10px;
+}
+input{
+  background:#111;
+  color:white;
+}
+button{
+  background:red;
+  color:white;
+  font-weight:bold;
+}
+.item{
+  background:#1a0000;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
+}
+.item img{
+  width:100%;
+  border-radius:10px;
+}
+</style>
+</head>
+<body>
+<header>ADMIN QUẢN LÝ SKIN</header>
+<div class="container">
+<input type="password" id="pass" placeholder="Mật khẩu admin">
+<button onclick="login()">Đăng nhập</button>
+<div id="panel" style="display:none;">
+  <input type="text" id="name" placeholder="Tên skin">
+  <input type="file" id="imageFile">
+  <input type="text" id="download" placeholder="Link tải">
+  <button onclick="addSkin()">Thêm Skin</button>
+  <div id="list"></div>
+</div>
+</div>
+<script>
+const adminPass = "2009";
+let skins = JSON.parse(localStorage.getItem("skins")) || [];
+function login(){
+  if(document.getElementById("pass").value===adminPass){
+    document.getElementById("panel").style.display='block';
+    render();
+  } else alert("Sai mật khẩu");
+}
+function addSkin(){
+  const name=document.getElementById("name").value;
+  const file=document.getElementById("imageFile").files[0];
+  const download=document.getElementById("download").value;
+  if(!name||!file||!download)return alert("Nhập đủ thông tin");
+  const reader=new FileReader();
+  reader.onload=function(e){
+    skins.push({name,image:e.target.result,download});
+    localStorage.setItem("skins",JSON.stringify(skins));
+    render();
+  }
+  reader.readAsDataURL(file);
+}
+function delSkin(i){
+  skins.splice(i,1);
+  localStorage.setItem("skins",JSON.stringify(skins));
+  render();
+}
+function render(){
+  const list=document.getElementById("list");
+  list.innerHTML='';
+  skins.forEach((skin,i)=>{
+    list.innerHTML += `
+      <div class="item">
+        <img src="${skin.image}">
+        <h3>${skin.name}</h3>
+        <button onclick="delSkin(${i})">Xóa</button>
+      </div>`;
+  });
+}
+</script>
+</body>
+</html>
